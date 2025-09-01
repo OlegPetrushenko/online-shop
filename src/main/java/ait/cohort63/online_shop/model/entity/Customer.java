@@ -1,9 +1,20 @@
 package ait.cohort63.online_shop.model.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "customer")
 public class Customer {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // если имена одинаковые, значение в скобках можно не писать
     private Long id;
+
+    @Column
     private String name;
+
+    @Column
     private boolean active;
 
     public Customer() {
