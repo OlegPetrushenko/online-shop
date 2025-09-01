@@ -13,7 +13,7 @@ public interface ProductService {
 
     Product getProductById(Long id);
 
-    Product updateProduct(Long id);
+    Product updateProduct(Long id, Product product);
 
     Product deleteProductById(Long id);
 
@@ -23,7 +23,7 @@ public interface ProductService {
 
     long getProductCount();
 
-    BigDecimal getTotalPrise();
+    BigDecimal getTotalPrice();
 
     BigDecimal getAveragePrice();
 }
