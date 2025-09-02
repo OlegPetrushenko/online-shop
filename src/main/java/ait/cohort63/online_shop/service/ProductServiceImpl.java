@@ -1,8 +1,10 @@
 package ait.cohort63.online_shop.service;
 
+import ait.cohort63.online_shop.model.dto.ProductDTO;
 import ait.cohort63.online_shop.model.entity.Product;
 import ait.cohort63.online_shop.repository.ProductRepository;
 import ait.cohort63.online_shop.service.interfaces.ProductService;
+import ait.cohort63.online_shop.service.mapping.ProductMappingService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,55 +16,63 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
 
-    public ProductServiceImpl(ProductRepository repository) {
+    private final ProductMappingService mapper;
+
+    public ProductServiceImpl(ProductRepository repository, ProductMappingService mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
-    public Product saveProduct(Product product) {
-        product.setActive(true);
-        return repository.save(product);
+    public ProductDTO saveProduct(ProductDTO productDTO) {
+        Product product = mapper.mapDtoToEntity(productDTO);
+//        product.setActive(true);
+        return mapper.mapEntityToDto(repository.save(product));
     }
 
     @Override
-    public List<Product> getAllActiveProducts() {
+    public List<ProductDTO> getAllActiveProducts() {
 //        List<Product> result = new ArrayList<>();
 //        List<Product> list = repository.findAll();
 //        for (Product product : list) {
 //            if (product.isActive()) result.add(product);
 //        }
 //        return result;
-        return repository.findAll().stream().filter(Product::isActive).toList();
+        return repository.findAll().stream()
+                .filter(Product::isActive)
+                // маппинг каждого продукта в DTO .map(entity -> mapper.mapEntityToDto(entity))
+                .map(mapper::mapEntityToDto)
+                .toList();
     }
 
     @Override
-    public Product getProductById(Long id) {
+    public ProductDTO getProductById(Long id) {
         Product product = repository.findById(id).orElse(null);
 
         if (product == null || !product.isActive()) {
             return null;
         }
 
-        return product;
+        return mapper.mapEntityToDto(product);
     }
 
     @Override
-    public Product updateProduct(Long id, Product product) {
+    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
         return null;
     }
 
     @Override
-    public Product deleteProductById(Long id) {
+    public ProductDTO deleteProductById(Long id) {
         return null;
     }
 
     @Override
-    public Product deleteProductByTitle(String title) {
+    public ProductDTO deleteProductByTitle(String title) {
         return null;
     }
 
     @Override
-    public Product restoreProductById(Long id) {
+    public ProductDTO restoreProductById(Long id) {
         return null;
     }
 
