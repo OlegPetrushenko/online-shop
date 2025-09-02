@@ -1,9 +1,11 @@
 package ait.cohort63.online_shop.service;
 
+import ait.cohort63.online_shop.model.dto.CustomerDTO;
 import ait.cohort63.online_shop.model.entity.Customer;
 import ait.cohort63.online_shop.model.entity.Product;
 import ait.cohort63.online_shop.repository.CustomerRepository;
 import ait.cohort63.online_shop.service.interfaces.CustomerService;
+import ait.cohort63.online_shop.service.mapping.CustomerMappingService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,49 +16,55 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
 
-    public CustomerServiceImpl(CustomerRepository repository) {
+    private final CustomerMappingService mapper;
+
+    public CustomerServiceImpl(CustomerRepository repository, CustomerMappingService mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
-    public Customer saveCustomer(Customer customer) {
-        customer.setActive(true);
-        return repository.save(customer);
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
+        Customer customer = mapper.mapDtoToEntity(customerDTO);
+        return mapper.mapEntityToDto(repository.save(customer));
     }
 
     @Override
-    public List<Customer> getAllActiveCustomers() {
-        return repository.findAll().stream().filter(Customer::isActive).toList();
+    public List<CustomerDTO> getAllActiveCustomers() {
+        return repository.findAll().stream()
+                .filter(Customer::isActive)
+                .map(mapper::mapEntityToDto)
+                .toList();
     }
 
     @Override
-    public Customer getCustomerById(Long id) {
+    public CustomerDTO getCustomerById(Long id) {
         Customer customer = repository.findById(id).orElse(null);
 
         if (customer == null || !customer.isActive()) {
             return null;
         }
 
-        return customer;
+        return mapper.mapEntityToDto(customer);
     }
 
     @Override
-    public Customer updateCustomer(Long id) {
+    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         return null;
     }
 
     @Override
-    public Customer deleteCustomerById(Long id) {
+    public CustomerDTO deleteCustomerById(Long id) {
         return null;
     }
 
     @Override
-    public Customer deleteCustomerByName(String name) {
+    public CustomerDTO deleteCustomerByName(String name) {
         return null;
     }
 
     @Override
-    public Customer restoreCustomerById(Long id) {
+    public CustomerDTO restoreCustomerById(Long id) {
         return null;
     }
 

@@ -1,19 +1,24 @@
 package ait.cohort63.online_shop.model.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "customer")
+@Schema(description = "Class that describes Customer")
 public class Customer {
 
+    @Schema(description = "Customer unique identifier", example = "333", accessMode = Schema.AccessMode.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id") // если имена одинаковые, значение в скобках можно не писать
     private Long id;
 
+    @Schema(description = "Customer name", example = "Richard")
     @Column
     private String name;
 
+    @Schema(description = "Id customer available", accessMode = Schema.AccessMode.READ_ONLY)
     @Column
     private boolean active;
 

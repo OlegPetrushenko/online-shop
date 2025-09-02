@@ -1,6 +1,6 @@
 package ait.cohort63.online_shop.service.interfaces;
 
-import ait.cohort63.online_shop.model.entity.Customer;
+import ait.cohort63.online_shop.model.dto.CustomerDTO;
 import ait.cohort63.online_shop.model.entity.Product;
 
 import java.math.BigDecimal;
@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface CustomerService {
 
-    Customer saveCustomer(Customer customer);
+    CustomerDTO saveCustomer(CustomerDTO customerDTO);
 
-    List<Customer> getAllActiveCustomers();
+    List<CustomerDTO> getAllActiveCustomers();
 
-    Customer getCustomerById(Long id);
+    CustomerDTO getCustomerById(Long id);
 
-    Customer updateCustomer(Long id);
+    CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO);
 
-    Customer deleteCustomerById(Long id);
+    CustomerDTO deleteCustomerById(Long id);
 
-    Customer deleteCustomerByName(String name);
+    CustomerDTO deleteCustomerByName(String name);
 
-    Customer restoreCustomerById(Long id);
+    CustomerDTO restoreCustomerById(Long id);
 
     long getCustomerCount();
 
