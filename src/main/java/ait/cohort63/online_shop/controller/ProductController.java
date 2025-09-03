@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+/*
+Получение всех продуктов - доступно всем пользователям, включая анонимных
+Получение продукта по id - только для аутентифицированных пользователей с любой ролью
+Добавление продукта в БД - только админ
+ */
+
 // http://localhost:8080/products
 // http://localhost:8080/api/products с префиксом для запросов к бек энду (настроено в application.yml)
 

@@ -18,6 +18,11 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/changelog-master.xml
 
+  jpa:
+    properties:
+      hibernate:
+        auto_quote_keyword: true
+
 server:
   servlet:
     context-path: /api
