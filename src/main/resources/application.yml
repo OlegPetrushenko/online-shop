@@ -1,19 +1,19 @@
 #spring.application.name=online_shop
 #
-#spring.datasource.url=jdbc:postgresql://localhost:5432/g_63_shop
-#spring.datasource.username=my_user
-#spring.datasource.password=pos1234
-#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.datasource.url=${DB_URL}
+#spring.datasource.username=${DB_USERNAME}
+#spring.datasource.password=${DB_PASSWORD}
+#spring.datasource.driver-class-name=${DB_DRIVER}
 
 spring:
   application:
     name: online_shop
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/g_63_shop
-    username: my_user
-    password: pos1234
-    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER}
 
   liquibase:
     change-log: classpath:db/changelog/changelog-master.xml
@@ -25,4 +25,8 @@ spring:
 
 server:
   servlet:
-    context-path: /api
+    context-path: ${CONTEXT_PATH}
+
+key:
+  access: ${KEY_ACCESS}
+  refresh: ${KEY_REFRESH}
