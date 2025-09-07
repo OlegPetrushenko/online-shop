@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -35,7 +36,7 @@ public class TokenService {
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshSecretPhrase));
     }
 
-    public String generateAccessToken(User user) {
+    public String generateAccessToken(UserDetails user) {
 
         // Задаем время окончания действия токена
         Instant now = Instant.now();
@@ -52,7 +53,7 @@ public class TokenService {
                 .compact();
     }
 
-    public String generationRefreshKey(User user) {
+    public String generationRefreshKey(UserDetails user) {
 
         Instant expiration = Instant.now().plus(30, ChronoUnit.DAYS);
         Date expirationDate = Date.from(expiration);
