@@ -5,6 +5,8 @@ import ait.cohort63.online_shop.model.entity.Product;
 import ait.cohort63.online_shop.repository.ProductRepository;
 import ait.cohort63.online_shop.service.interfaces.ProductService;
 import ait.cohort63.online_shop.service.mapping.ProductMappingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +18,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
 
     private final ProductMappingService mapper;
+
+    // SLF4J : самая распространенная библиотека для логирования
+    private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     public ProductServiceImpl(ProductRepository repository, ProductMappingService mapper) {
         this.repository = repository;
@@ -48,12 +53,37 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProductById(Long id) {
         Product product = repository.findById(id).orElse(null);
 
+        // Если продукт не найден или его состояние active = false, выбрасываем исключение
         if (product == null || !product.isActive()) {
-            return null;
+            throw new RuntimeException("Product not active");
+//            return null;
         }
 
         return mapper.mapEntityToDto(product);
     }
+
+    //    @Override
+//    public ProductDTO getProductById(Long id) {
+//        logger.info("Method getProductById called with parameter: {}", id);
+//        logger.warn("Method getProductById called with parameter: {}", id);
+//        logger.error("Method getProductById called with parameter: {}", id);
+//
+//        Product product = repository.findById(id).orElse(null);
+//
+//        // null ->
+//        // true || ? -> true
+//        // Product
+//        // false || ? ->
+//
+//        if (product == null || !product.isActive()) {
+//            return null;
+//        }
+//
+//        return mapper.mapEntityToDto(product);
+//
+//        // false && ? -> false
+//        // false & ? (будет посчитано) -> false
+//    }
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {

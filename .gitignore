@@ -42,6 +42,7 @@ liquibase.*
 *.swp
 *.bak
 *~
+logs/
 
 ### OS Files ###
 .DS_Store

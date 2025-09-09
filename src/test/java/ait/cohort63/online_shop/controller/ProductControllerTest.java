@@ -1,8 +1,10 @@
 package ait.cohort63.online_shop.controller;
 
 import ait.cohort63.online_shop.model.dto.ProductDTO;
+import ait.cohort63.online_shop.model.entity.Product;
 import ait.cohort63.online_shop.model.entity.Role;
 import ait.cohort63.online_shop.model.entity.User;
+import ait.cohort63.online_shop.repository.ProductRepository;
 import ait.cohort63.online_shop.repository.RoleRepository;
 import ait.cohort63.online_shop.repository.UserRepository;
 import ait.cohort63.online_shop.security.dto.LoginRequestDTO;
@@ -12,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +44,7 @@ class ProductControllerTest {
     private final String LOGIN_ENDPOINT = "/login";
 
     private final String BEARER_PREFIX = "Bearer ";
+    private final String AUTH_HEADER_NAME = "Authorization";
 
     @LocalServerPort
     private int port;
@@ -64,8 +66,13 @@ class ProductControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     private String adminAccessToken;
     private String userAccessToken;
+
+    private static Long testProductId;
 
     @BeforeEach
     public void setUp() {
@@ -151,7 +158,204 @@ class ProductControllerTest {
     // Тесты будут здесь
 
     @Test
-    public void test() {
+    public void positiveGettingAllProductWithoutAuthorization() {
 
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME;
+
+        // Void - специальный класс пустышка (т.е. на входе в теле ничего не будет)
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        ResponseEntity<List<ProductDTO>> response = template.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<List<ProductDTO>>() {
+                }
+        );
+
+        // Проверка статуса ответа
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response has unexpected staus code");
+        // Проверка наличия тела
+        assertTrue(response.hasBody(), "Response doesn't have body");
+    }
+
+    @Test
+    public void negativeSavingProductWithoutAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME;
+
+        HttpEntity<ProductDTO> request = new HttpEntity<>(testProduct);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                ProductDTO.class
+        );
+
+        // Проверка статуса: статус Forbidden 403
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response has unexpected status code");
+
+        // Проверка тела: отсутствие тела
+        assertFalse(response.hasBody(), "Response has unexpected body");
+    }
+
+    @Test
+    void negativeSavingProductWithUserTokenAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME;
+
+        // Map<String, List<String>
+        headers.put(AUTH_HEADER_NAME, List.of(userAccessToken));
+
+        // Homework
+        /*
+        Составить запрос (передать туда тестовый продукт и заголовки с авторизацией)
+        Отправить запрос, получить ответ
+        Проверка статуса ответа и тела
+         */
+        HttpEntity<ProductDTO> request = new HttpEntity<>(testProduct, headers);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                ProductDTO.class
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Expected 403 FORBIDDEN for USER role");
+
+        ProductDTO body = response.getBody();
+        if (body != null) {
+            assertNull(body.getTitle(), "Unexpected product data in body");
+        }
+    }
+
+    @Order(10)
+    @Test
+    void positiveSavingProductWithAdminTokenAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME;
+        headers.put(AUTH_HEADER_NAME, List.of(adminAccessToken));
+
+        HttpEntity<ProductDTO> request = new HttpEntity<>(testProduct, headers);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                ProductDTO.class
+        );
+
+        // Повторное сохранение продукта с таким же именем невозможно
+        // В последнем по order тесте я должен удалить продукт из БД
+        // Мне нужно зафиксировать id сохраненного продукта (для удаления)
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response has unexpected staus code");
+        assertTrue(response.hasBody(), "Response body is empty");
+
+        ProductDTO savedProduct = response.getBody();
+
+        assertNotNull(savedProduct, "Response body is null");
+        assertEquals(testProduct.getTitle(), savedProduct.getTitle(), "Saved product has unexpected title");
+
+        // Сохраняем id продукта для использования
+        testProductId = savedProduct.getId();
+    }
+
+    @Test
+    @Order(20)
+    void negativeGettingProductByIdWithoutAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME + "/" + testProductId;
+
+        // Homework
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                ProductDTO.class
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Expected 403 FORBIDDEN for anonymous request");
+        assertFalse(response.hasBody(), "Response should not contain body");
+    }
+
+    @Test
+    @Order(30)
+    void negativeGettingProductByIdWithBasicAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME + "/" + testProductId;
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<ProductDTO> response = template
+                .withBasicAuth(TEST_ADMIN_NAME, TEST_PASSWORD)
+                .exchange(
+                        url,
+                        HttpMethod.GET,
+                        request,
+                        ProductDTO.class
+                );
+
+        // Homework
+        // Проверить ответ (какой статус, какое тело)
+        assertTrue(
+                response.getStatusCode() == HttpStatus.FORBIDDEN || response.getStatusCode() == HttpStatus.UNAUTHORIZED,
+                "Expected 403 FORBIDDEN or 401 UNAUTHORIZED for basic auth"
+        );
+        assertFalse(response.hasBody(), "Response should not contain body");
+    }
+
+    @Test
+    @Order(40)
+    void negativeGettingProductByIdWithIncorrectTokenAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME + "/" + testProductId;
+
+        headers.put(AUTH_HEADER_NAME, List.of(adminAccessToken + "a"));
+
+        // Homework
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                ProductDTO.class
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Expected 403 FORBIDDEN for invalid token");
+        assertFalse(response.hasBody(), "Response should not contain body");
+    }
+
+    @Test
+    @Order(50)
+    void positiveGettingProductByIdWithUserTokenAuthorization() {
+
+        String url = URL_PREFIX + port + PRODUCT_RESOURCE_NAME + "/" + testProductId;
+
+        headers.put(AUTH_HEADER_NAME, List.of(userAccessToken));
+
+        // Homework
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<ProductDTO> response = template.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                ProductDTO.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected 200 OK for valid user token");
+        assertTrue(response.hasBody(), "Response body should not be empty");
+
+        ProductDTO receivedProduct = response.getBody();
+        assertNotNull(receivedProduct, "Received product should not be null");
+        assertEquals(testProduct.getTitle(), receivedProduct.getTitle(), "Product title mismatch");
+
+        // В последнем тесте цепочку удаляем из БД сохраненный продукт
+        productRepository.deleteById(testProductId);
     }
 }
