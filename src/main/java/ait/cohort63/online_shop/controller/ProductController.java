@@ -1,5 +1,7 @@
 package ait.cohort63.online_shop.controller;
 
+import ait.cohort63.online_shop.exception_handling.Response;
+import ait.cohort63.online_shop.exception_handling.exceptions.FirstTestException;
 import ait.cohort63.online_shop.model.dto.ProductDTO;
 import ait.cohort63.online_shop.service.interfaces.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,8 +11,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.net.ssl.SSLEngineResult;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -39,7 +45,10 @@ public class ProductController {
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
                     @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class))})})
     @PostMapping
-    public ProductDTO saveProduct(@Parameter(description = "Created product object") @RequestBody ProductDTO productDTO) {
+    public ProductDTO saveProduct(
+            @Parameter(description = "Created product object")
+            @Valid @RequestBody ProductDTO productDTO
+    ) {
         // обращаемся к сервису для сохранения продукта
         return service.saveProduct(productDTO);
     }
@@ -52,7 +61,10 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)})
     @GetMapping("/{id}")
-    public ProductDTO getById(@Parameter(description = "The id that needs to be fetched", required = true) @PathVariable Long id) {
+    public ProductDTO getById(
+            @Parameter(description = "The id that needs to be fetched", required = true)
+            @PathVariable Long id
+    ) {
         // обращаемся к сервису и запрашиваем продукт по id
         return service.getProductById(id);
     }
@@ -101,6 +113,19 @@ public class ProductController {
     @GetMapping("/average-price")
     public BigDecimal getAveragePrice() {
         return service.getAveragePrice();
+    }
+
+    /*
+    Плюс: Точечная настройка
+    Минусы:
+    Повторение кода в разных контроллерах, если логика одинаковая
+    Более сложная поддержка
+     */
+    // Обработчик исключения прямо в контроллере,
+    @ExceptionHandler(FirstTestException.class)
+    public ResponseEntity<Response> handleException(FirstTestException ex) {
+        Response response = new Response(ex.getMessage());
+        return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
     }
 }
 

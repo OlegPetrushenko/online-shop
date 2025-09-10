@@ -1,6 +1,7 @@
 package ait.cohort63.online_shop.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -12,9 +13,17 @@ public class ProductDTO {
     private Long id;
 
     @Schema(description = "Product title", example = "Banana")
+    @NotNull(message = "Product title cannot be null")
+    // @NotEmpty проверяет, что поле не null и что оно не пустое (может состоять из пробелов)
+    @NotBlank(message = "Product title cannot be empty")
+//    @Pattern(regexp = "^[A-Z][a-z ]{2,}$", message = "")
+    // Первая большая, вторая маленькая, третья обязательная и последующие любая буква, цифра или пробел
+    @Pattern(regexp = "^[A-Z][a-z][a-zA-Z0-9 ]+$", message = "Product title should be at least 3 character, start with a capital letter, and contains only letters, digits and spaces")
     private String title;
 
     @Schema(description = "Product price", example = "8.50")
+    @DecimalMin(value = "1.0", message = "Product price should be greater or equal than 1.0")
+    @DecimalMax(value = "100000", inclusive = false, message = "Product price should be less than 100_000")
     private BigDecimal price;
 
     public ProductDTO() {

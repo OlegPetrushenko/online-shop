@@ -35,12 +35,13 @@ public class SecurityConfig {
                 // Встраиваем фильтр в цепочку перед указанным фильтром
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/{id}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/products").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated()
+                                .anyRequest().permitAll() // временно отключаем Security
+//                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/products").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/products/{id}").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+////                        .requestMatchers(HttpMethod.POST, "/products").hasAnyRole("ADMIN", "USER")
+//                        .anyRequest().authenticated()
                 );
 
         return http.build();
