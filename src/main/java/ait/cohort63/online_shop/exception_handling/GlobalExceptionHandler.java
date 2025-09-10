@@ -1,5 +1,8 @@
 package ait.cohort63.online_shop.exception_handling;
 
+import ait.cohort63.online_shop.exception_handling.exceptions.ProductDeletionException;
+import ait.cohort63.online_shop.exception_handling.exceptions.ProductAlreadyDeletedException;
+import ait.cohort63.online_shop.exception_handling.exceptions.ProductNotFoundException;
 import ait.cohort63.online_shop.exception_handling.exceptions.ThirdTestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(ProductDeletionException.class)
+    public ResponseEntity<Response> handleProductDeletion(ProductDeletionException ex) {
+        return new ResponseEntity<>(new Response(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Response> handleProductNotFound(ProductNotFoundException ex) {
+        return new ResponseEntity<>(new Response(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductAlreadyDeletedException.class)
+    public ResponseEntity<Response> handleProductAlreadyDeleted(ProductAlreadyDeletedException ex) {
+        return new ResponseEntity<>(new Response(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    //    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response> handleValidationException(MethodArgumentNotValidException ex) {
         // Вариант 1
         // Логика обработки ошибок валидации

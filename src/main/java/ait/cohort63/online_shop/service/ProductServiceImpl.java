@@ -1,8 +1,6 @@
 package ait.cohort63.online_shop.service;
 
-import ait.cohort63.online_shop.exception_handling.exceptions.FirstTestException;
-import ait.cohort63.online_shop.exception_handling.exceptions.SecondTestException;
-import ait.cohort63.online_shop.exception_handling.exceptions.ThirdTestException;
+import ait.cohort63.online_shop.exception_handling.exceptions.*;
 import ait.cohort63.online_shop.model.dto.ProductDTO;
 import ait.cohort63.online_shop.model.entity.Product;
 import ait.cohort63.online_shop.repository.ProductRepository;
@@ -92,17 +90,46 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        return null;
+        Product product = repository.findById(id).orElseThrow(() ->
+                new ProductNotFoundException("Product with ID " + id + " not found."));
+
+        if (!product.isActive()) {
+            throw new ProductAlreadyDeletedException("Cannot update product with ID " + id + " because it is deleted.");
+        }
+
+        product.setTitle(productDTO.getTitle());
+        product.setPrice(productDTO.getPrice());
+
+        return mapper.mapEntityToDto(repository.save(product));
     }
 
     @Override
     public ProductDTO deleteProductById(Long id) {
-        return null;
+        Product product = repository.findById(id).orElseThrow(() ->
+                new ProductNotFoundException("Product with ID " + id + " not found."));
+
+        if (!product.isActive()) {
+            throw new ProductAlreadyDeletedException("Product with ID " + id + " is already deleted.");
+        }
+
+        product.setActive(false);
+        repository.save(product);
+        return mapper.mapEntityToDto(product);
     }
 
     @Override
     public ProductDTO deleteProductByTitle(String title) {
-        return null;
+        List<Product> products = repository.findAll();
+
+        Product product = products.stream()
+                .filter(p -> p.getTitle().equalsIgnoreCase(title) && p.isActive())
+                .findFirst()
+                .orElseThrow(() -> new ProductDeletionException("Active product with title '" + title + "' not found."));
+
+        product.setActive(false);
+        repository.save(product);
+
+        return mapper.mapEntityToDto(product);
     }
 
     @Override
