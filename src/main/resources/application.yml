@@ -23,9 +23,26 @@ spring:
       hibernate:
         auto_quote_keyword: true
 
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD} # настраивается в аккаунте гугл
+    host: smtp.gmail.com # адрес сервера
+    port: 587 # Порт для отправки почты через smtp
+    properties:
+      mail:
+        smtp:
+          auth: true # Включает аутентификацию для smtp запросов
+          starttls:
+            enable: true # Включает зашифрованное соединение
+          ssl:
+            protocols: TLSv1.2 # Протокол защиты
+            trust: smtp.gmail.com # Добавление smtp сервера в доверенные
+          debug: true # Включает логирование (в продакшене false)
+
 server:
   servlet:
     context-path: ${CONTEXT_PATH}
+#  port: 8080 (по умолчанию, можно задать свой если занят)
 
 key:
   access: ${KEY_ACCESS}
