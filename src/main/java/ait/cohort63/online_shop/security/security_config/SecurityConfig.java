@@ -36,13 +36,14 @@ public class SecurityConfig {
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
 //                                .anyRequest().permitAll() // временно отключаем Security
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/{id}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/confirm").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products/{id}").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.POST, "/products").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 );
 
         return http.build();

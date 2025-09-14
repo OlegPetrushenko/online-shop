@@ -5,4 +5,6 @@ import ait.cohort63.online_shop.model.entity.User;
 public interface ConfirmationCodeService {
 
     String generationConfirmationCode(User user);
+
+    void confirmUser(String code);
 }
