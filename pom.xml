@@ -130,6 +130,14 @@
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
 
+        <!--        Files upload-->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.767</version>
+        </dependency>
+
     </dependencies>
 
     <build>

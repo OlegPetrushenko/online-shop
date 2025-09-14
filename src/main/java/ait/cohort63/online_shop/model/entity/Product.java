@@ -29,6 +29,9 @@ public class Product {
     @Column
     private boolean active;
 
+    @Column(name = "image")
+    private String image;
+
     public Product() {
     }
 
@@ -64,25 +67,34 @@ public class Product {
         this.active = active;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
-        return String.format("Product: id - %d, title - %s, price - %s, active - %s",
-                id, title, price, active ? "yes" : "no");
+        return String.format("Product: id - %d, title - %s, price - %s, image_url - %s, active - %s",
+                id, title, price, image, active ? "yes" : "no");
     }
 
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof Product product)) return false;
 
-        return active == product.active && id.equals(product.id) && title.equals(product.title) && price.equals(product.price);
+        return active == product.active && Objects.equals(id, product.id) && Objects.equals(title, product.title) && Objects.equals(price, product.price) && Objects.equals(image, product.image);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + title.hashCode();
-        result = 31 * result + price.hashCode();
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(price);
         result = 31 * result + Boolean.hashCode(active);
+        result = 31 * result + Objects.hashCode(image);
         return result;
     }
 }
