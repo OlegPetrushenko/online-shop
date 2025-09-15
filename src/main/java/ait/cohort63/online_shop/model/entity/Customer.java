@@ -24,7 +24,8 @@ public class Customer {
     @Column
     private boolean active;
 
-    @OneToOne(mappedBy = "customer")
+    // cascadeAll = Все операции, которые я делаю с Customer, автоматически применяй и к связанному Cart
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Cart cart;
 
     public Customer() {
