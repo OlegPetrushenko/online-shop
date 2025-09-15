@@ -45,7 +45,7 @@ public class CustomerController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)})
     @GetMapping("/{id}")
-    public CustomerDTO getById(@Parameter(description = "The id that needs to be fetched", required = true) @PathVariable Long id) {
+    public CustomerDTO getCustomerById(@Parameter(description = "The id that needs to be fetched", required = true) @PathVariable Long id) {
         return customerService.getCustomerById(id);
     }
 
@@ -55,23 +55,23 @@ public class CustomerController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)})
     @GetMapping
-    public List<CustomerDTO> getAll() {
+    public List<CustomerDTO> getAllActiveCustomers() {
         return customerService.getAllActiveCustomers();
     }
 
     @PutMapping("/{id}")
-    public CustomerDTO update(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
 //        customerDTO.setId(id);
         return customerService.updateCustomer(id, customerDTO);
     }
 
     @DeleteMapping("/{id}")
-    public CustomerDTO remove(@PathVariable Long id) {
+    public CustomerDTO deleteCustomerById(@PathVariable Long id) {
         return customerService.deleteCustomerById(id);
     }
 
     @DeleteMapping("/{name}")
-    public CustomerDTO removeByName(@PathVariable String name) {
+    public CustomerDTO deleteCustomerByName(@PathVariable String name) {
         return customerService.deleteCustomerByName(name);
     }
 
@@ -81,33 +81,33 @@ public class CustomerController {
     }
 
     @GetMapping("/count")
-    public long getCustomerCount() {
-        return customerService.getCustomerCount();
+    public long getActiveCustomerCount() {
+        return customerService.getActiveCustomerCount();
     }
 
     @GetMapping("/{id}/total")
-    public BigDecimal getTotalPrice(@PathVariable Long id) {
-        return customerService.getTotalPrice(id);
+    public BigDecimal getCartTotalPrice(@PathVariable Long id) {
+        return customerService.getCartTotalPrice(id);
     }
 
     @GetMapping("/{id}/average")
-    public BigDecimal getAveragePrice(@PathVariable Long id) {
-        return customerService.getAveragePrice(id);
+    public BigDecimal getCartAveragePrice(@PathVariable Long id) {
+        return customerService.getCartAveragePrice(id);
     }
 
     @PostMapping("/{customerId}/cart/{productId}")
     public Product addProductToCart(@PathVariable Long customerId, @PathVariable Long productId) {
-        return customerService.addProductById(customerId, productId);
+        return customerService.addProductToCart(customerId, productId);
     }
 
     @DeleteMapping("/{customerId}/cart/{productId}")
     public Product deleteProductFromCart(@PathVariable Long customerId, @PathVariable Long productId) {
-        return customerService.deleteProductById(customerId, productId);
+        return customerService.removeProductFromCart(customerId, productId);
     }
 
-    @DeleteMapping("/{id}/cart")
-    public ResponseEntity<String> clearCart(@PathVariable Long id) {
-        customerService.clearCart(id);
+    @DeleteMapping("/{id}/cart/clear")
+    public ResponseEntity<String> clearCustomerCart(@PathVariable Long id) {
+        customerService.clearCustomerCart(id);
         return ResponseEntity.ok("Cart cleared for customer with ID: " + id);
     }
 }

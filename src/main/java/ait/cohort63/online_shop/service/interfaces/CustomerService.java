@@ -22,15 +22,15 @@ public interface CustomerService {
 
     CustomerDTO restoreCustomerById(Long id);
 
-    long getCustomerCount();
+    long getActiveCustomerCount();
 
-    BigDecimal getTotalPrice(Long id);
+    BigDecimal getCartTotalPrice(Long customerId);
 
-    BigDecimal getAveragePrice(Long id);
+    BigDecimal getCartAveragePrice(Long customerId);
 
-    Product addProductById(Long customerId, Long productId);
+    Product addProductToCart(Long customerId, Long productId);
 
-    Product deleteProductById(Long customerId, Long productId);
+    Product removeProductFromCart(Long customerId, Long productId);
 
-    void clearCart(Long id);
+    void clearCustomerCart(Long customerId);
 }

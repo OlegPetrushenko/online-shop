@@ -69,32 +69,32 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public long getCustomerCount() {
+    public long getActiveCustomerCount() {
         return 0;
     }
 
     @Override
-    public BigDecimal getTotalPrice(Long id) {
+    public BigDecimal getCartTotalPrice(Long customerId) {
         return null;
     }
 
     @Override
-    public BigDecimal getAveragePrice(Long id) {
+    public BigDecimal getCartAveragePrice(Long customerId) {
         return null;
     }
 
     @Override
-    public Product addProductById(Long customerId, Long productId) {
+    public Product addProductToCart(Long customerId, Long productId) {
         return null;
     }
 
     @Override
-    public Product deleteProductById(Long customerId, Long productId) {
+    public Product removeProductFromCart(Long customerId, Long productId) {
         return null;
     }
 
     @Override
-    public void clearCart(Long id) {
+    public void clearCustomerCart(Long customerId) {
 
     }
 }
