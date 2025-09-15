@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/products").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/files").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/confirm").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/products/{id}").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
